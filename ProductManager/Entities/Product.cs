@@ -7,16 +7,18 @@ namespace ProductManager.Entities;
 public partial class Product : ObservableObject
 {
     [ObservableProperty]
-    private string id;
+    private string? id;
 
     [ObservableProperty]
-    private string name;
+    private string? name;
 
     [ObservableProperty]
     private int price;
 
     [ObservableProperty]
     private int amount;
+
+    public Product() { }
 
     public Product(string id, string name, int price, int amount)
     {

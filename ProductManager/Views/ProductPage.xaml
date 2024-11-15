@@ -39,8 +39,8 @@
                 Grid.Column="1" />
             <Button
                 x:Name="delete_product_btn"
-                Text="Chế độ xoá"
-                Command="{Binding }"
+                Text="{Binding DeleteStatus}"
+                Command="{Binding DeleteProductCommand}"
                 Grid.Column="2" />
             <Button
                 x:Name="import_data_btn"

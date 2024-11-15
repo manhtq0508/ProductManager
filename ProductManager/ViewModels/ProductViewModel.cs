@@ -16,6 +16,8 @@ public partial class ProductViewModel : ObservableObject
 
     [ObservableProperty]
     SelectionMode currentSelectionMode = SelectionMode.Single;
+    [ObservableProperty]
+    private string deleteStatus = "Chế độ xoá";
 
     private readonly IProductRepo productRepo;
 
@@ -26,6 +28,7 @@ public partial class ProductViewModel : ObservableObject
 
     public async Task LoadProductDataAsync()
     {
+        Products.Clear();
         foreach (var product in await productRepo.GetProductsAsync())
         {
             Products.Add(product);
@@ -69,8 +72,33 @@ public partial class ProductViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void DeleteProduct()
+    private async Task DeleteProduct()
     {
-        // Delete a product
+        if (DeleteStatus == "Chế độ xoá")
+        {
+            DeleteStatus = "Xoá / Thoát xoá";
+            CurrentSelectionMode = SelectionMode.Multiple;
+            return;
+        }
+
+        DeleteStatus = "Chế độ xoá";
+
+        if (selectedProducts == null || selectedProducts.Count == 0) return;
+
+        if (App.Current?.MainPage != null)
+        {
+            bool result = await App.Current.MainPage.DisplayAlert("Xác nhận", "Bạn có chắc chắn muốn xoá sản phẩm đã chọn?", "Có", "Không");
+            if (!result) return;
+        }
+
+        await productRepo.DeleteProductAsync(selectedProducts);
+        
+        foreach (var product in selectedProducts)
+        {
+            Products.Remove(product);
+        }
+
+        selectedProducts.Clear();
+        CurrentSelectionMode = SelectionMode.Single;
     }
 }
