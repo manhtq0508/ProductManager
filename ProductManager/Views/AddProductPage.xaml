@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.Views.AddProductPage"
+             xmlns:viewmodel="clr-namespace:ProductManager.ViewModels"
+             x:DataType="viewmodel:AddProductViewModel">
+    <VerticalStackLayout
+        WidthRequest="400"
+        Padding="30"
+        Spacing="10"
+        VerticalOptions="CenterAndExpand"
+        HorizontalOptions="CenterAndExpand">
+
+        <Grid 
+            ColumnDefinitions="Auto, *"
+            ColumnSpacing="10"
+            RowDefinitions="Auto, Auto, Auto, Auto"
+            RowSpacing="10">
+            <Label
+                Text="Mã sản phẩm" 
+                VerticalOptions="Center"
+                Grid.Column="0"
+                Grid.Row="0" />
+            <Entry
+                Text="{Binding Id}"
+                Grid.Column="1"
+                Grid.Row="0" />
+
+            <Label
+                Text="Tên sản phẩm" 
+                VerticalOptions="Center"
+                Grid.Column="0"
+                Grid.Row="1" />
+            <Entry
+                Text="{Binding Name}"
+                Grid.Column="1"
+                Grid.Row="1" />
+
+            <Label
+                Text="Giá sản phẩm"
+                VerticalOptions="Center"
+                Grid.Column="0"
+                Grid.Row="2" />
+            <Entry
+                Text="{Binding Price}"
+                Grid.Column="1"
+                Grid.Row="2" />
+
+            <Label
+                Text="Số lượng" 
+                VerticalOptions="Center"
+                Grid.Column="0"
+                Grid.Row="3" />
+            <Entry
+                Text="{Binding Amount}"
+                Grid.Column="1"
+                Grid.Row="3" />
+        </Grid>
+
+        <Grid
+            ColumnDefinitions="100, 100"
+            ColumnSpacing="30"
+            HorizontalOptions="CenterAndExpand"
+            VerticalOptions="CenterAndExpand">
+            <Button
+                Text="Thêm"
+                Command="{Binding AddProductCommand}"
+                Grid.Column="0"/>
+            <Button
+                Text="Huỷ"
+                Command="{Binding CancelCommand}"
+                Grid.Column="1"/>
+        </Grid>
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.Views.MainPage"
+             xmlns:viewmodel="clr-namespace:ProductManager.ViewModels"
+             x:DataType="viewmodel:MainViewModel">
+
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout
+                Padding="30,0"
+                Spacing="10">
+
+                <Label
+                    Text="Welcome"
+                    FontSize="30"
+                    FontAttributes="Bold"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center" />
+
+                <Label
+                    Text="Đây là lần đầu bạn chạy chương trình, sẽ có các tuỳ chọn cho bạn về dữ liệu:" />
+                <Label
+                    Text="1. Import file dữ liệu:" 
+                    FontAttributes="Bold" />
+                <Label
+                    Text="Các file hỗ trợ gồm: SQLite (*.db, *.sqlite3, *.sqlite), Excel (*.xlsx)." 
+                    FontAttributes="Italic"
+                    Padding="10, 0, 0, 0" />
+
+                <Grid 
+                    ColumnDefinitions=".80*, .20*"
+                    ColumnSpacing="10">
+                    <Entry
+                        x:Name="data_file_path"
+                        IsReadOnly="True"
+                        Grid.Column="0"
+                        Text="{Binding DataFilePath}"/>
+                    <Button
+                        x:Name="choose_file_btn"
+                        Text="Chọn file"
+                        Grid.Column="1" 
+                        Command="{Binding SelectDataFileCommand}"/>
+                </Grid>
+
+                <Button
+                    x:Name="import_data_btn"
+                    Text="Import dữ liệu"
+                    WidthRequest="270"
+                    Command="{Binding ImportDataCommand}"/>
+
+                <BoxView
+                    HeightRequest="1"
+                    BackgroundColor="{StaticResource Primary}"
+                    Margin="0, 10, 0, 10" />
+
+                <Label
+                    Text="2. Sử dụng file có dữ liệu mặc định:"
+                    FontAttributes="Bold" />
+                <Button
+                    x:Name="default_db_btn"
+                    Text="Sử dụng file mặc định"
+                    WidthRequest="270"
+                    Command="{Binding UsingDefaultDataCommand}"/>
+
+                <BoxView
+                    HeightRequest="1"
+                    BackgroundColor="{StaticResource Primary}"
+                    Margin="0, 10, 0, 10" />
+
+                <Label
+                    Text="3. Tiếp tục mà không có dữ liệu:"
+                    FontAttributes="Bold" />
+                <Button
+                    x:Name="empty_db_btn"
+                    Text="Tiếp tục"
+                    WidthRequest="270"
+                    Command="{Binding ContinueWithoutDataCommand}"/>
+            </VerticalStackLayout>
+        </ScrollView>
+        <Grid
+            x:Name="loading_screen"
+            IsVisible="{Binding ShowLoadingScreen}"
+            BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+            Opacity="0.9"
+            RowDefinitions="*"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand">
+            <VerticalStackLayout
+                Spacing="15"
+                HorizontalOptions="CenterAndExpand"
+                VerticalOptions="CenterAndExpand">
+                <Label
+                    Text="Đang khởi tạo chương trình"
+                    FontSize="24"
+                    FontAttributes="Bold"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"/>
+                <ActivityIndicator
+                    IsRunning="True" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.Views.ProductPage"
+             xmlns:converter="clr-namespace:ProductManager.Converters"    
+             xmlns:entity="clr-namespace:ProductManager.Entities"
+             xmlns:viewmodel="clr-namespace:ProductManager.ViewModels"
+             x:DataType="viewmodel:ProductViewModel">
+
+    <!-- Import converter to calculate in binding -->
+    <ContentPage.Resources>
+        <converter:CalculateTotal x:Key="CalculateTotal" />
+    </ContentPage.Resources>
+    
+    <Grid
+        RowDefinitions="Auto, Auto, Auto, *"
+        RowSpacing="10"
+        Padding="30">
+
+        <SearchBar
+            x:Name="search_bar"
+            Placeholder="Tìm theo mã sản phẩm, tên sản phẩm"
+            Grid.Row="0"/>
+
+        <Grid 
+            ColumnDefinitions="180, 180, 180, 180, 180"
+            ColumnSpacing="10"
+            HorizontalOptions="Center"
+            Grid.Row="1">
+            <Button
+                x:Name="add_product_btn"
+                Text="Thêm"
+                Command="{Binding AddProductCommand}"
+                Grid.Column="0"/>
+            <Button
+                x:Name="edit_product_btn"
+                Text="Sửa"
+                Command="{Binding EditProductCommand}"
+                Grid.Column="1" />
+            <Button
+                x:Name="delete_product_btn"
+                Text="Chế độ xoá"
+                Command="{Binding }"
+                Grid.Column="2" />
+            <Button
+                x:Name="import_data_btn"
+                Text="Nhập"
+                Grid.Column="3" />
+            <Button
+                x:Name="export_data_btn"
+                Text="Xuất"
+                Grid.Column="4" />
+        </Grid>
+
+        <Grid
+            ColumnDefinitions="Auto, .15*, Auto, .35*, Auto, .15*, Auto, .15*, Auto, .20*, Auto"
+            BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+            Grid.Row="2">
+            <BoxView 
+                BackgroundColor="{StaticResource Black}"
+                WidthRequest="1"
+                Grid.Column="0" />
+            <Label
+                Text="Mã sản phẩm"
+                FontAttributes="Bold"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Grid.Column="1"/>
+
+            <BoxView 
+                BackgroundColor="{StaticResource Black}"
+                WidthRequest="1"
+                Grid.Column="2" />
+            <Label
+                Text="Tên sản phẩm"
+                FontAttributes="Bold"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Grid.Column="3"/>
+
+            <BoxView 
+                BackgroundColor="{StaticResource Black}"
+                WidthRequest="1"
+                Grid.Column="4" />
+            <Label
+                Text="Giá"
+                FontAttributes="Bold"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Grid.Column="5"/>
+
+            <BoxView 
+                BackgroundColor="{StaticResource Black}"
+                WidthRequest="1"
+                Grid.Column="6" />
+            <Label
+                Text="Số lượng"
+                FontAttributes="Bold"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Grid.Column="7"/>
+            
+            <BoxView 
+                BackgroundColor="{StaticResource Black}"
+                WidthRequest="1"
+                Grid.Column="8" />
+            <Label
+                Text="Thành tiền"
+                FontAttributes="Bold"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Grid.Column="9"/>
+
+            <BoxView 
+                BackgroundColor="{StaticResource Black}"
+                WidthRequest="1"
+                Grid.Column="10" />
+        </Grid>
+
+        <CollectionView 
+            x:Name="product_collection_view"
+            ItemsSource="{Binding Products}"
+            SelectionMode="{Binding CurrentSelectionMode}"
+            SelectionChanged="ProductCollectionView_SelectionChanged"
+            Grid.Row="3">
+            
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type entity:Product}">
+                    <Grid
+                        ColumnDefinitions=".15*, .35*, .15*, .15*, .20*">
+                        <Label
+                            Text="{Binding Id}"
+                            Grid.Column="0"
+                            Padding="0, 15"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center"/>
+                        <Label
+                            Text="{Binding Name}"
+                            Grid.Column="1" 
+                            Padding="10, 15"
+                            HorizontalTextAlignment="Start"
+                            VerticalTextAlignment="Center"/>
+                        <Label
+                            Text="{Binding Price, StringFormat='{0:N0}'}"
+                            Grid.Column="2"
+                            Padding="10, 15"
+                            HorizontalTextAlignment="End"
+                            VerticalTextAlignment="Center"/>
+                        <Label
+                            Text="{Binding Amount, StringFormat='{0:N0}'}"
+                            Grid.Column="3"
+                            Padding="10, 15"
+                            HorizontalTextAlignment="End"
+                            VerticalTextAlignment="Center"/>
+                        <Label 
+                            Text="{Binding Converter={StaticResource CalculateTotal}, StringFormat='{0:N0}'}" 
+                            Grid.Column="4"
+                            Padding="10, 15"
+                            HorizontalTextAlignment="End"
+                            VerticalTextAlignment="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
