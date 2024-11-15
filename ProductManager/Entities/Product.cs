@@ -1,13 +1,32 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ProductManager.Entities;
 
 [PrimaryKey(nameof(Id))]
 public partial class Product : ObservableObject
 {
-    public required string Id { get; set; }
-    public required string Name { get; set; }
-    public required int Price { get; set; }
-    public required int Amount { get; set; }
+    [ObservableProperty]
+    private string id = string.Empty;
+
+    [ObservableProperty]
+    private string name = string.Empty;
+
+    [ObservableProperty]
+    private int price;
+
+    [ObservableProperty]
+    private int amount;
+
+    public Product()
+    {
+    }
+
+    public Product(string id, string name, int price, int amount)
+    {
+        Id = id;
+        Name = name;
+        Price = price;
+        Amount = amount;
+    }
 }
