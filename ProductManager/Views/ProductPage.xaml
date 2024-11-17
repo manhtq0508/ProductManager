@@ -45,10 +45,12 @@
             <Button
                 x:Name="import_data_btn"
                 Text="Nhập"
+                Command="{Binding ImportDataCommand}"
                 Grid.Column="3" />
             <Button
                 x:Name="export_data_btn"
                 Text="Xuất"
+                Command="{Binding ExportDataCommand}"
                 Grid.Column="4" />
         </Grid>
 

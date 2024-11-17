@@ -28,6 +28,11 @@
                     FontAttributes="Italic"
                     Padding="10, 0, 0, 0" />
 
+                <Label
+                    Text="Lưu ý: Các file cần có đúng định dạng để tránh lỗi import dữ liệu (Chi tiết trong tệp README.md)" 
+                    FontAttributes="Italic"
+                    Padding="10, 0, 0, 0" />
+
                 <Grid 
                     ColumnDefinitions=".80*, .20*"
                     ColumnSpacing="10">

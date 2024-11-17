@@ -1,8 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ProductManager.Entities;
 using ProductManager.Interfaces;
 using ProductManager.Services;
+using ProductManager.Utils;
 using ProductManager.Views;
 
 namespace ProductManager.ViewModels;
@@ -12,16 +14,16 @@ public partial class MainViewModel(DatabaseService dbService, IProductRepo produ
     public async Task InitializeDbAndNavigate()
     {
         // !IMPORTANT: REMOVE THIS LINE WHEN COMPLETED
-        // Preferences.Clear();
+        //Preferences.Clear();
 
-        if (!string.IsNullOrEmpty(Preferences.Get("DB_PATH", "")))
-        {
-            ShowLoadingScreen = true;
+        var dbPath = Preferences.Get("DB_PATH", "");
+        if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
+            return;
 
-            var dbPath = Preferences.Get("DB_PATH", "");
-            await TryInitializeDatabaseAsync(dbPath);
-            await Shell.Current.GoToAsync($"//{nameof(ProductPage)}");
-        }
+        ShowLoadingScreen = true;
+
+        await TryInitializeDatabaseAsync(dbPath);
+        await Shell.Current.GoToAsync($"//{nameof(ProductPage)}");
     }
     private async Task TryInitializeDatabaseAsync(string dbPath)
     {
@@ -81,7 +83,7 @@ public partial class MainViewModel(DatabaseService dbService, IProductRepo produ
     [RelayCommand]
     private async Task ImportData()
     {
-        if (string.IsNullOrWhiteSpace(DataFilePath)) 
+        if (string.IsNullOrWhiteSpace(DataFilePath))
         {
             if (App.Current?.MainPage != null)
                 await App.Current.MainPage.DisplayAlert("Lỗi", "Vui lòng chọn file!", "OK");
@@ -103,8 +105,37 @@ public partial class MainViewModel(DatabaseService dbService, IProductRepo produ
 
     private async Task ImportFromExcel()
     {
-        if (App.Current?.MainPage != null)
-            await App.Current.MainPage.DisplayAlert("Lỗi", "hiện chưa hỗ trợ!", "OK");
+        ShowLoadingScreen = true;
+
+        var filename = Path.GetFileName(DataFilePath);
+        var file = Path.Combine(FileSystem.AppDataDirectory, $"{filename}.db");
+        if (File.Exists(file))
+            File.Delete(file);
+
+        await TryInitializeDatabaseAsync(file);
+
+        Preferences.Set("DB_PATH", file);
+
+        await Toast.Make("Đang import dữ liệu", CommunityToolkit.Maui.Core.ToastDuration.Short, 12).Show();
+
+        List<Product> newProducts = new List<Product>();
+
+        try
+        {
+            newProducts = await Task.Run(() => ExcelHelper.Import(DataFilePath));
+            await productRepo.AddProductAsync(newProducts);
+        }
+        catch (Exception ex)
+        {
+            if (App.Current?.MainPage != null)
+            {
+                App.Current?.MainPage.DisplayAlert("Lỗi", ex.Message, "Ok");
+                return;
+            }
+        }
+
+        await Toast.Make("Import dữ liệu hoàn tất", CommunityToolkit.Maui.Core.ToastDuration.Short, 12).Show();
+        await Shell.Current.GoToAsync($"//{nameof(ProductPage)}");
     }
 
     [RelayCommand]

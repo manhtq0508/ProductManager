@@ -1,7 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ProductManager.Entities;
 using ProductManager.Interfaces;
+using ProductManager.Utils;
 using ProductManager.Views;
 using System.Collections.ObjectModel;
 
@@ -100,5 +103,93 @@ public partial class ProductViewModel : ObservableObject
 
         selectedProducts.Clear();
         CurrentSelectionMode = SelectionMode.Single;
+    }
+
+    [RelayCommand]
+    private async Task ImportData()
+     {
+        FilePickerFileType fileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>> {
+            {DevicePlatform.WinUI, new string[] {".xlsx"} }
+        });
+
+        var file = await FilePicker.Default.PickAsync(new PickOptions
+        {
+            PickerTitle = "Chọn file dữ liệu",
+            FileTypes = fileType
+        });
+
+        if (file == null) return;
+        
+        await Toast.Make("Đang import dữ liệu", CommunityToolkit.Maui.Core.ToastDuration.Short, 12).Show();
+
+        List<Product> newProducts = new List<Product>();
+
+        try
+        {
+            newProducts = await Task.Run(() => ExcelHelper.Import(file.FullPath));
+            await productRepo.AddProductAsync(newProducts);
+        }
+        catch (Exception ex)
+        {
+            if (App.Current?.MainPage != null)
+            {
+                App.Current?.MainPage.DisplayAlert("Lỗi", ex.Message, "Ok");
+                return;
+            }
+        }
+
+        foreach (var product in newProducts) { Products.Add(product); }
+
+        await Toast.Make("Import dữ liệu hoàn tất", CommunityToolkit.Maui.Core.ToastDuration.Short, 12).Show();
+    }
+
+    [RelayCommand]
+    private async Task ExportData()
+    {
+        if (App.Current?.MainPage != null)
+        {
+            bool isExcel = await App.Current.MainPage.DisplayAlert("Thông báo", "Bạn muốn xuất file nào?", "Excel", "Pdf");
+            if (isExcel)
+            {
+                await Task.Run(() => ExportExcel());
+            }
+            else
+            {
+                await Task.Run(() => ExportPdf());
+            }
+        }
+    }
+
+    private async void ExportExcel()
+    {
+        if (Products ==  null || Products.Count == 0) { return; }
+
+        var file = await GetSaveFileName("xlsx");
+
+        await Toast.Make($"Đang xuất file\n{file}", CommunityToolkit.Maui.Core.ToastDuration.Short, 12).Show();
+        await Task.Run(() => ExcelHelper.Export(file, Products.ToList<Product>()));
+        await Toast.Make($"Đã xuất file thành công\n{file}", CommunityToolkit.Maui.Core.ToastDuration.Short, 12).Show();
+    }
+
+    private async void ExportPdf()
+    {
+        if (Products == null || Products.Count == 0) { return; }
+
+        var file = await GetSaveFileName("pdf");
+
+        await Toast.Make($"Đang xuất file\n{file}", CommunityToolkit.Maui.Core.ToastDuration.Short, 12).Show();
+        await Task.Run(() => PdfHelper.Export(file, Products.ToList<Product>()));
+        await Toast.Make($"Đã xuất file thành công\n{file}", CommunityToolkit.Maui.Core.ToastDuration.Short, 12).Show();
+    }
+
+    private async Task<string> GetSaveFileName(string fileExt)
+    {
+        var path = "";
+        var folder = await FolderPicker.Default.PickAsync();
+
+        if (folder.IsSuccessful && folder.Folder != null)
+            path = folder.Folder.Path;
+
+        return Path.Combine(path, $"ProductManager_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.{fileExt}");
     }
 }

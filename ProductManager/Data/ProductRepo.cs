@@ -20,6 +20,14 @@ public class ProductRepo(DatabaseService dbService) : IProductRepo
 
     public async Task AddProductAsync(List<Product> products)
     {
+        foreach (var product in products)
+        {
+            bool isExist = await dbService.AppDbContext.Products.AnyAsync(p => p.Id == product.Id);
+
+            if (isExist)
+                throw new Exception("Mã sản phẩm đã tồn tại");
+        }
+
         await dbService.AppDbContext.Products.AddRangeAsync(products);
         await dbService.AppDbContext.SaveChangesAsync();
     }
