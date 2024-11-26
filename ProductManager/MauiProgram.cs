@@ -32,11 +32,11 @@ namespace ProductManager
             builder.Services.AddSingleton<ProductPage>();
             builder.Services.AddSingleton<ProductViewModel>();
 
-            builder.Services.AddSingleton<AddProductPage>();
-            builder.Services.AddSingleton<AddProductViewModel>();
+            builder.Services.AddTransient<AddProductPage>();
+            builder.Services.AddTransient<AddProductViewModel>();
 
-            builder.Services.AddSingleton<EditProductPage>();
-            builder.Services.AddSingleton<EditProductViewModel>();
+            builder.Services.AddTransient<EditProductPage>();
+            builder.Services.AddTransient<EditProductViewModel>();
 
             builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<IProductRepo, ProductRepo>();

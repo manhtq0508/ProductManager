@@ -44,6 +44,7 @@
                 Grid.Row="2" />
             <Entry
                 Text="{Binding SelectedProduct.Price}"
+                Keyboard="Numeric"
                 Grid.Column="1"
                 Grid.Row="2" />
 
@@ -54,6 +55,7 @@
                 Grid.Row="3" />
             <Entry
                 Text="{Binding SelectedProduct.Amount}"
+                Keyboard="Numeric"
                 Grid.Column="1"
                 Grid.Row="3" />
         </Grid>

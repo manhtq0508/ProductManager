@@ -14,6 +14,9 @@ public partial class ProductViewModel : ObservableObject
 {
     [ObservableProperty]
     ObservableCollection<Product> products = new ObservableCollection<Product>();
+    ObservableCollection<Product> originProducts = new ObservableCollection<Product>();
+    string oldKeyword = "";
+
 
     private List<Product> selectedProducts = new List<Product>();
 
@@ -44,8 +47,46 @@ public partial class ProductViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private Task SearchTextChanged(string text)
+    {
+        if (!string.IsNullOrWhiteSpace(text)) return Task.CompletedTask;
+        if (originProducts.Count == 0) return Task.CompletedTask;
+
+        Products.Clear();
+        foreach (var product in originProducts)
+            Products.Add(product);
+
+        originProducts.Clear();
+        oldKeyword = "";
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private async Task Search(string keyword)
+    {
+        if (string.IsNullOrWhiteSpace(keyword) || keyword == oldKeyword) return;
+
+        if (originProducts.Count > 0) 
+            await SearchTextChanged("");
+         
+        originProducts = new ObservableCollection<Product>(Products);
+
+        var filteredProducts = originProducts.Where(product =>
+            (!string.IsNullOrEmpty(product.Id) && product.Id.Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(product.Name) && product.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+
+        Products.Clear();
+        foreach (var product in filteredProducts)
+            Products.Add(product);
+
+        oldKeyword = keyword;
+    }
+
+    [RelayCommand]
     private async Task AddProduct()
     {
+        await SearchTextChanged("");
         await Shell.Current.GoToAsync(nameof(AddProductPage));
     }
 
@@ -86,7 +127,11 @@ public partial class ProductViewModel : ObservableObject
 
         DeleteStatus = "Chế độ xoá";
 
-        if (selectedProducts == null || selectedProducts.Count == 0) return;
+        if (selectedProducts == null || selectedProducts.Count == 0)
+        {
+            CurrentSelectionMode = SelectionMode.Single;
+            return;
+        }
 
         if (App.Current?.MainPage != null)
         {
